@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>movie-info</title>
+</head>
+<body>
+    <form action="/user-info" method="get">
+        <input type="hidden" name="uid" value="{{ uid }}">
+        <label for="uid">ID: </label>
+        <input id="uid" type="submit" name="opid" value="{{ uid }}">
+    </form>
+
+    <form action="/main" method="get">
+        <input type="hidden" name="uid" value="{{ uid }}">
+        <input type="submit" value="Main Page">
+    </form>
+
+    <h1>{{ movie[1] }}</h1>
+    <table border="1">
+        <thead>
+            <th>director</th>
+            <th>genre</th>
+            <th>release date</th>
+            {% if uid_role == 'admin' %}
+            <th>DELETE MOVIE</th>
+            {% endif %}
+        </thead>
+
+        <tbody>
+            <tr>
+                <td>{{ movie[2] }}</td>
+                <td>{{ movie[3] }}</td>
+                <td>{{ movie[4] }}</td>
+                {% if uid_role == 'admin' %}
+                <td>
+                    <form action="/delete-movie" method="post">
+                        <input type="hidden" name="uid" value="{{ uid }}">
+                        <input type="hidden" name="mid" value="{{ movie[0] }}">
+                        <input type="submit" value="❌❌❌❌❌❌">
+                    </form>
+                </td>
+                {% endif %}
+            </tr>
+        </tbody>
+    </table>
+
+    <br><hr>
+
+    <h2>[Reviews]</h2>
+    <h3>Average Rating: {{ avg_rating }}</h3>
+    <table border="1">
+        <thead>
+            <th>ratings</th>
+            <th>user</th>
+            <th>review</th>
+            <th>time</th>
+        </thead>
+
+        <tbody>
+            {% for review in reviews %}
+            <tr>
+                <td>{{ review[0] }}</td>
+                <td>
+                    <form action="/user-info" method="get">
+                        <input type="hidden" name="uid" value="{{ uid }}">
+                        <input type="submit" name="opid" value="{{ review[1] }}">
+                    </form>
+                </td>
+                <td>{{ review[2] }}</td>
+                <td>{{ review[3] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <br><hr>
+
+    <form action="/movie-info" method="post">
+        <label for="rating">My Review: </label>
+        <select id="rating" name="rating">
+            <option value="5">5</option>
+            <option value="4">4</option>
+            <option value="3">3</option>
+            <option value="2">2</option>
+            <option value="1">1</option>
+            <option value="0">0</option>
+        </select>
+        <br>
+        <textarea name="content" cols="100" rows="4" required></textarea>
+        <br>
+        <input type="hidden" name="uid" value="{{ uid }}">
+        <input type="hidden" name="mid" value="{{ movie[0] }}">
+        <input type="submit" value="submit">
+    </form>
+</body>
+</html>
