@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>user-info</title>
+</head>
+<body>
+    <form action="/user-info" method="get">
+        <input type="hidden" name="uid" value="{{ uid }}">
+        <label for="uid">ID: </label>
+        <input id="uid" type="submit" name="opid" value="{{ uid }}">
+    </form>
+
+    <form action="/main" method="get">
+        <input type="hidden" name="uid" value="{{ uid }}">
+        <input type="submit" value="Main Page">
+    </form>
+
+    <h1>{{ opid }}</h1>
+
+    {% if (uid != opid) and (uid_role != 'admin') and (opid_role != 'admin') %}
+    <form action="/tie-user" method="get">
+        <input type="hidden" name="uid" value="{{ uid }}">
+        <input type="hidden" name="opid" value="{{ opid }}">
+        <input type="submit" name="action" value="follow">
+        <input type="submit" name="action" value="mute">
+    </form>
+    {% endif %}
+
+    <h2>[Reviews]</h2>
+    <table border="1">
+        <thead>
+            <th>ratings</th>
+            <th>movies</th>
+            <th>review</th>
+            <th>time</th>
+            {% if (uid == opid) or ((uid_role == 'admin') and (opid_role == 'user')) %}
+            <th>delete</th>
+            {% endif %}
+        </thead>
+
+        <tbody>
+            {% for review in reviews %}
+            <tr>
+                <td>{{ review[1] }}</td>
+                <td>
+                    <form action="/movie-info" method="get">
+                        <input type="hidden" name="uid" value="{{ uid }}">
+                        <input type="hidden" name="mid" value="{{ review[0] }}">
+                        <input type="submit" value="{{ review[2] }}">
+                    </form>
+                </td>
+                <td>{{ review[3] }}</td>
+                <td>{{ review[4] }}</td>
+                {% if (uid == opid) or ((uid_role == 'admin') and (opid_role == 'user')) %}
+                <td>
+                    <form action="/delete-review" method="post">
+                        <input type="hidden" name="uid" value="{{ uid }}">
+                        <input type="hidden" name="opid" value="{{ opid }}">
+                        <input type="hidden" name="mid" value="{{ review[0] }}">
+                        <input type="submit" value="❌❌">
+                    </form>
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <br><hr>
+
+    <h2>[Followers]</h2>
+    <form action="/user-info" method="get">
+        <input type="hidden" name="uid" value="{{ uid }}">
+        {% for follower in followers %}
+            <input type="submit" name="opid" value="{{ follower }}">
+        {% endfor %}
+    </form>
+
+    {% if uid == opid %}
+        <br><hr><br>
+
+        {% if uid_role == 'user' %}
+        <h2>[Followed]</h2>
+        <table border="1">
+            <thead>
+                <th>user</th>
+                <th>unfollow</th>
+            </thead>
+
+            <tbody>
+                {% for followed_user in followed_users %}
+                <tr>
+                    <td>
+                        <form action="/user-info" method="get">
+                            <input type="hidden" name="uid" value="{{ uid }}">
+                            <input type="submit" name="opid" value="{{ followed_user }}">
+                        </form>
+                    </td>
+                    <td>
+                        <form action="/untie-user" method="get">
+                            <input type="hidden" name="uid" value="{{ uid }}">
+                            <input type="hidden" name="opid" value="{{ followed_user }}">
+                            <input type="submit" name="action" value="unfollow">
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h2>[Muted]</h2>
+        <table border="1">
+            <thead>
+                <th>user</th>
+                <th>unmute</th>
+            </thead>
+
+            <tbody>
+                {% for muted_user in muted_users %}
+                <tr>
+                    <td>
+                        <form action="/user-info" method="get">
+                            <input type="hidden" name="uid" value="{{ uid }}">
+                            <input type="submit" name="opid" value="{{ muted_user }}">
+                        </form>
+                    </td>
+                    <td>
+                        <form action="/untie-user" method="get">
+                            <input type="hidden" name="uid" value="{{ uid }}">
+                            <input type="hidden" name="opid" value="{{ muted_user }}">
+                            <input type="submit" name="action" value="unmute">
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% elif uid_role == 'admin' %}
+        <h2>[Add Movie]</h2>
+        <form action="/add-movie" method="post">
+            <label for="title">Title:</label><br>
+            <input id="title" type="text" name="title" value="" required><br>
+
+            <label for="director">Director:</label><br>
+            <input id="director" type="text" name="director" value="" required><br>
+
+            <label for="genre">Genre:</label><br>
+            <select id="genre" name="genre">
+                <option value="action">action</option>
+                <option value="comedy">comedy</option>
+                <option value="drama">drama</option>
+                <option value="fantasy">fantasy</option>
+                <option value="horror">horror</option>
+                <option value="mystery">mystery</option>
+                <option value="romance">romance</option>
+                <option value="thriller">thriller</option>
+                <option value="western">western</option>
+            </select><br>
+
+            <label for="rel_date">Released Date:</label><br>
+            <input id="rel_date" type="date" name="rel_date" required><br>
+
+            <input type="hidden" name="uid" value="{{ uid }}">
+            <input type="hidden" name="opid" value="{{ opid }}">
+            <input type="submit" value="Add">
+        </form>
+
+        <br><hr>
+
+        <h2>[Manage Malicious Users]</h2>
+        <table border="1">
+            <thead>
+                <th>user</th>
+                <th>unset mal_user</th>
+            </thead>
+
+            <tbody>
+                {% for mal_user in mal_users %}
+                <tr>
+                    <td>
+                        <form action="/user-info" method="get">
+                            <input type="hidden" name="uid" value="{{ uid }}">
+                            <input type="submit" name="opid" value="{{ mal_user }}">
+                        </form>
+                    </td>
+                    <td>
+                        <form action="/mal-user" method="get">
+                            <input type="hidden" name="uid" value="{{ uid }}">
+                            <input type="hidden" name="mal_user" value="{{ mal_user }}">
+                            <input type="submit" name="action" value="unset">
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table><br>
+
+        <form action="/mal-user" method="get">
+            <input type="hidden" name="uid" value="{{ uid }}">
+            <label for="mal_user">Type User ID: </label><br>
+            <input id="mal_user" type="text" name="mal_user" required>
+            <input type="hidden" name="action" value="set">
+            <input type="submit" value="Add">
+        </form>
+        {% else %}
+        <p>SOMETHING WENT WRONG</p>
+
+        {% endif %}
+        <br>
+    {% endif %}
+</body>
+</html>
