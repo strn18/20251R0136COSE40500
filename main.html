@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>main</title>
+</head>
+<body>
+    <form action="/user-info" method="get">
+        <input type="hidden" name="uid" value="{{ uid }}">
+        <label for="uid">ID: </label>
+        <input id="uid" type="submit" name="opid" value="{{ uid }}">
+    </form>
+
+    <h1>Movies</h1>
+    <form action="/sort-movies" method="post">
+        <input type="hidden" name="uid" value="{{ uid }}">
+        <input type='submit' name='m-sort' value='latest'>
+        <input type='submit' name='m-sort' value='genre'>
+        <input type='submit' name='m-sort' value='ratings'>
+    </form>
+
+    <table border="1">
+        <thead>
+            <th>title</th>
+            <th>ratings</th>
+            <th>director</th>
+            <th>genre</th>
+            <th>release date</th>
+        </thead>
+
+        <tbody>
+            {% for movie in movies %}
+            <tr>
+                <td>
+                    <form action="/movie-info" method="get">
+                        <input type="hidden" name="uid" value="{{ uid }}">
+                        <input type="hidden" name="mid" value="{{ movie[0] }}">
+                        <input type="submit" value="{{ movie[1] }}">
+                    </form>
+                </td>
+                <td>{{ movie[2] }}</td>
+                <td>{{ movie[3] }}</td>
+                <td>{{ movie[4] }}</td>
+                <td>{{ movie[5] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <br><hr>
+
+    <h1>Reviews</h1>
+    <form action="/sort-reviews" method="post">
+        <input type="hidden" name="uid" value="{{ uid }}">
+        <input type='submit' name='r-sort' value='latest'>
+        <input type='submit' name='r-sort' value='title'>
+        <input type='submit' name='r-sort' value='followers'>
+    </form>
+
+    <table border="1">
+        <thead>
+            <th>ratings</th>
+            <th>user</th>
+            <th>title</th>
+            <th>review</th>
+            <th>time</th>
+        </thead>
+
+        <tbody>
+            {% for review in reviews %}
+            <tr>
+                <td>{{ review[1] }}</td>
+                <td>
+                    <form action="/user-info" method="get">
+                        <input type="hidden" name="uid" value="{{ uid }}">
+                        <input type="submit" name="opid" value="{{ review[2] }}">
+                    </form>
+                </td>
+                <td>
+                    <form action="/movie-info" method="get">
+                        <input type="hidden" name="uid" value="{{ uid }}">
+                        <input type="hidden" name="mid" value="{{ review[0] }}">
+                        <input type="submit" value="{{ review[3] }}">
+                    </form>
+                </td>
+                <td>{{ review[4] }}</td>
+                <td>{{ review[5] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <br>
+</body>
+</html>
